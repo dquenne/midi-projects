@@ -1,0 +1,4 @@
+{
+  "python.defaultInterpreterPath": "./virtualenv/bin/python",
+  "python.pipenvPath": "./virtualenv/bin/pipenv",
+}
