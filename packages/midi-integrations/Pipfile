@@ -5,6 +5,9 @@ name = "pypi"
 
 [packages]
 python-rtmidi = "*"
+ipython = "*"
+mido = "*"
+black = "*"
 
 [dev-packages]
 
