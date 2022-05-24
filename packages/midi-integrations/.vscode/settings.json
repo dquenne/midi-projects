@@ -1,4 +1,6 @@
 {
+  "python.linting.pylintPath": "./virtualenv/bin/pylint",
+  "python.sortImports.path": "./virtualenv/bin/isort",
   "python.defaultInterpreterPath": "./virtualenv/bin/python",
   "python.pipenvPath": "./virtualenv/bin/pipenv",
 }

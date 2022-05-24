@@ -8,6 +8,8 @@ python-rtmidi = "*"
 ipython = "*"
 mido = "*"
 black = "*"
+pylint = "*"
+isort = "*"
 
 [dev-packages]
 
