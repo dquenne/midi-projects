@@ -12,14 +12,14 @@
     "**/CVS": true,
     "**/.DS_Store": true,
     "**/Thumbs.db": true,
+    "**/node_modules/*/**": true,
+    "**/virtualenv/**": true,
     "**/*.pyc": true,
     "**/__pycache__": true
   },
   "files.watcherExclude": {
     "**/.git/objects/**": true,
     "**/.git/subtree-cache/**": true,
-    "**/node_modules/*/**": true,
-    "**/virtualenv/*/**": true,
     "**/.hg/store/**": true
   },
   "files.insertFinalNewline": true,
