@@ -5,6 +5,16 @@
     88,
     120
   ],
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/*.pyc": true,
+    "**/__pycache__": true
+  },
   "files.watcherExclude": {
     "**/.git/objects/**": true,
     "**/.git/subtree-cache/**": true,
@@ -13,10 +23,22 @@
     "**/.hg/store/**": true
   },
   "files.insertFinalNewline": true,
+  "python.analysis.extraPaths": [
+    "packages/*/src",
+    "packages/*/virtualenv/lib"
+  ],
+  "python.analysis.autoSearchPaths": false,
+  "python.analysis.indexing": true,
+  "python.analysis.useLibraryCodeForTypes": true,
   "python.formatting.provider": "black",
   "python.formatting.blackArgs": [
     "--line-length=88"
   ],
+  "python.autoComplete.extraPaths": [
+    "packages/*/src",
+    "packages/*/virtualenv/lib"
+  ],
+  "python.languageServer": "Pylance",
   "python.linting.enabled": true,
   "python.linting.pylintEnabled": true,
   "[python]": {
