@@ -25,7 +25,7 @@ from .util import check_is_within_number_of_bits
 class ParameterChangeMessageSchema:
     BYTE_0 = 0x43
     MESSAGE_GROUP = 0x34
-    DEVICE_NUMBER = 0x0  # TODO: Figure out what it actually is
+    DEVICE_NUMBER = 0x5  # FIXME: Make configurable - this is user-set and shouldn't be part of the schema
 
     def __init__(
         self,
@@ -56,7 +56,7 @@ class ParameterChangeMessageSchema:
             "sysex",
             data=[
                 self.BYTE_0,
-                0x10 + self.DEVICE_NUMBER,
+                0b00010000 ^ self.DEVICE_NUMBER,
                 self.MESSAGE_GROUP,
                 (operator_number << 4) + self.parameter_change_type.value,
                 fourth_byte,
