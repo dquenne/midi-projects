@@ -4,7 +4,7 @@ https://usa.yamaha.com/files/download/other_assets/1/317121/SY77E2.PDF
 """
 
 
-from .converters import RangeConverter, SignMagnitudeRangeConverter
+from .converters.range_converters import RangeConverter, SignMagnitudeRangeConverter
 from .schema_builders import VoiceCommonDataSchema
 
 

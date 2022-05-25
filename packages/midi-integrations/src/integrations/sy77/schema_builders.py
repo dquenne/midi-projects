@@ -17,6 +17,7 @@
 """
 from mido import Message
 
+from .converters.base_converter import BaseConverter
 from .data_models import Sy77ParameterValue
 from .types import ParameterChangeType
 from .util import check_is_within_number_of_bits
@@ -69,11 +70,7 @@ class ParameterChangeMessageSchema:
 
 
 class MultiCommonDataMessageSchema(ParameterChangeMessageSchema):
-    def __init__(
-        self,
-        n2: int,
-        value_converter: ".converters.Converter",
-    ):
+    def __init__(self, n2: int, value_converter: BaseConverter):
         super().__init__(
             parameter_change_type=ParameterChangeType.MULTI_COMMON_DATA, n1=0, n2=n2
         )
@@ -88,11 +85,7 @@ class MultiCommonDataMessageSchema(ParameterChangeMessageSchema):
 
 
 class VoiceCommonDataSchema(ParameterChangeMessageSchema):
-    def __init__(
-        self,
-        n2: int,
-        value_converter: ".converters.Converter",
-    ):
+    def __init__(self, n2: int, value_converter: BaseConverter):
         super().__init__(
             parameter_change_type=ParameterChangeType.VOICE_COMMON_DATA, n1=0, n2=n2
         )

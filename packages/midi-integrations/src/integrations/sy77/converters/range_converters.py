@@ -1,35 +1,9 @@
-from abc import ABC
-from typing import Optional, Tuple
-
-from .data_models import Sy77ParameterValue
-
-
-class Converter(ABC):
-    def validate(self, value) -> Optional[str]:
-        raise NotImplementedError()
-
-    def convert(self, value) -> Sy77ParameterValue:
-        """
-        Convert to 2-byte value. Returns a tuple of the form (MSB, LSB)
-        """
-        raise NotImplementedError()
+from ..data_models import Sy77ParameterValue
+from .base_converter import BaseConverter
+from .util import split_14_bits_to_2_bytes
 
 
-class BooleanConverter(Converter):
-    def validate(self, value: bool):
-        if not isinstance(value, bool):
-            return "not a boolean"
-
-        return None
-
-    def convert(self, value: bool):
-        if validation_error := self.validate(value):
-            raise ValueError(f"Bad value ({value}): {validation_error}")
-
-        return Sy77ParameterValue(0x00, 1 if value else 0)
-
-
-class RangeConverter(Converter):
+class RangeConverter(BaseConverter):
     MIN_VALUE_NAME = "min_value"
     MAX_VALUE_NAME = "max_value"
 
@@ -45,14 +19,6 @@ class RangeConverter(Converter):
         self.num_bytes = num_bytes
 
         self._validate_setup_parameters()
-
-    @staticmethod
-    def _split_14_bits(value: int) -> Tuple[int, int]:
-        # split 14-bit number across lower 7 bits of two bytes
-        most_significant_byte = value >> 7
-        least_significant_byte = value & 0b0_1111111
-
-        return (most_significant_byte, least_significant_byte)
 
     def _get_valid_values_range(self):
         if self.num_bytes == 2:
@@ -91,7 +57,7 @@ class RangeConverter(Converter):
         if validate_error := self.validate(value):
             raise ValueError(f"Bad value ({value}): {validate_error}")
 
-        most_significant_byte, least_significant_byte = self._split_14_bits(value)
+        most_significant_byte, least_significant_byte = split_14_bits_to_2_bytes(value)
 
         return Sy77ParameterValue(most_significant_byte, least_significant_byte)
 
@@ -186,6 +152,8 @@ class SignMagnitudeRangeConverter(RangeConverter):
         final_value = sign_bit ^ normalized_value
 
         # split 14-bit number across lower 7 bits of two bytes
-        most_significant_byte, least_significant_byte = self._split_14_bits(final_value)
+        most_significant_byte, least_significant_byte = split_14_bits_to_2_bytes(
+            final_value
+        )
 
         return Sy77ParameterValue(most_significant_byte, least_significant_byte)
