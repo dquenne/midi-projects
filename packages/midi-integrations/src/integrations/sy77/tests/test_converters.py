@@ -113,14 +113,14 @@ class TestByteOffsetRangeConverter(TestCase):
 
 class TestSignMagnitudeRangeConverter(TestCase):
     def setUp(self):
-        self.converter = SignMagnitudeRangeConverter(-12, 12)
+        self.converter = SignMagnitudeRangeConverter(-12, 12, sign_bit_index=4)
 
     def test_sets_magnitude_byte(self):
         value = -10
 
         converted_value = self.converter.convert(value)
 
-        self.assertEqual(converted_value, (0x00, 0b01000000 + 10))
+        self.assertEqual(converted_value, (0x00, 0b00010000 + 10))
 
     def test_handles_positive_numbers(self):
         value = 10
@@ -131,11 +131,11 @@ class TestSignMagnitudeRangeConverter(TestCase):
 
     def test_validates_min_value(self):
         with self.assertRaises(ValueError):
-            SignMagnitudeRangeConverter(-64, 63)
+            SignMagnitudeRangeConverter(-64, 63, sign_bit_index=4)
 
     def test_validates_max_value(self):
         with self.assertRaises(ValueError):
-            SignMagnitudeRangeConverter(-63, 64)
+            SignMagnitudeRangeConverter(-63, 64, sign_bit_index=4)
 
     def test_value_too_small(self):
         value = -13
@@ -155,4 +155,4 @@ class TestSignMagnitudeRangeConverter(TestCase):
 
     def test_two_byte_values_not_supported(self):
         with self.assertRaises(NotImplementedError):
-            SignMagnitudeRangeConverter(-3000, 3000, num_bytes=2)
+            SignMagnitudeRangeConverter(-3000, 3000, num_bytes=2, sign_bit_index=4)

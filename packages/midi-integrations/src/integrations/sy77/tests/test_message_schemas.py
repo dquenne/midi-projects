@@ -4,7 +4,7 @@ from ..message_schemas import VoiceCommonDataSchemas
 
 
 class TestVoiceCommonDataSchemas(TestCase):
-    SYSEX_TEMPLATE = "F0 43 10 34 02 00 00 {:02X} 00 {:02X} F7"
+    SYSEX_TEMPLATE = "F0 43 15 34 02 00 00 {:02X} 00 {:02X} F7"
 
     def test_zero(self):
         test_cases = [
@@ -72,6 +72,15 @@ class TestVoiceCommonDataSchemas(TestCase):
             # (VoiceCommonDataSchemas.PORTAMENTO_MODE, 0, 0x3C, 0x00),
             (VoiceCommonDataSchemas.PORTAMENTO_TIME, 127, 0x3D, 0x7F),
             (VoiceCommonDataSchemas.VOICE_VOLUME, 127, 0x3F, 0x7F),
+        ]
+
+        for schema, input_value, n2, v2 in test_cases:
+            sysex_message = schema.create_sysex_message(input_value)
+            self.assertEqual(sysex_message.hex(), self.SYSEX_TEMPLATE.format(n2, v2))
+
+    def test_negatives(self):
+        test_cases = [
+            (VoiceCommonDataSchemas.AFTER_TOUCH_PITCH_BEND_RANGE, -12, 0x29, 0x1C),
         ]
 
         for schema, input_value, n2, v2 in test_cases:

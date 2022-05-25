@@ -32,7 +32,7 @@ class VoiceCommonDataSchemas:
     # [Controllers]
     WHEEL_PITCH_BEND_RANGE = VoiceCommonDataSchema(0x28, RangeConverter(0, 12))
     AFTER_TOUCH_PITCH_BEND_RANGE = VoiceCommonDataSchema(
-        0x29, SignMagnitudeRangeConverter(-12, 12)
+        0x29, SignMagnitudeRangeConverter(-12, 12, sign_bit_index=4)
     )
 
     PITCH_MOD_DEVICE_ASSIGN_CC = VoiceCommonDataSchema(0x2A, RangeConverter(0, 121))

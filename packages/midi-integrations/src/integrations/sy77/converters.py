@@ -1,5 +1,5 @@
 from abc import ABC
-from typing import Optional
+from typing import Optional, Tuple
 
 from .data_models import Sy77ParameterValue
 
@@ -30,12 +30,6 @@ class BooleanConverter(Converter):
 
 
 class RangeConverter(Converter):
-    MAX_POSSIBLE_VALUE_1_BYTE = 0b0_1111111  # 7 bits
-    MAX_POSSIBLE_VALUE_2_BYTES = 0b00_1111111_1111111  # 14 bits
-
-    MIN_POSSIBLE_VALUE_1_BYTE = 0
-    MIN_POSSIBLE_VALUE_2_BYTES = 0
-
     MIN_VALUE_NAME = "min_value"
     MAX_VALUE_NAME = "max_value"
 
@@ -52,6 +46,20 @@ class RangeConverter(Converter):
 
         self._validate_setup_parameters()
 
+    @staticmethod
+    def _split_14_bits(value: int) -> Tuple[int, int]:
+        # split 14-bit number across lower 7 bits of two bytes
+        most_significant_byte = value >> 7
+        least_significant_byte = value & 0b0_1111111
+
+        return (most_significant_byte, least_significant_byte)
+
+    def _get_valid_values_range(self):
+        if self.num_bytes == 2:
+            return (0, 0b00_1111111_1111111)  # 14 bits
+
+        return (0, 0b0_1111111)  # 7 bits
+
     def _validate_setup_parameters(self):
         if not 1 <= self.num_bytes <= 2:
             raise ValueError(f"num_bytes must be 1 or 2, got {self.num_bytes}")
@@ -59,22 +67,15 @@ class RangeConverter(Converter):
         if self.max_value <= self.min_value:
             raise ValueError("max_value must be greater than min_value")
 
-        if self.max_value > self.MAX_POSSIBLE_VALUE_2_BYTES:
+        min_possible, max_possible = self._get_valid_values_range()
+        if self.max_value > max_possible:
             raise ValueError(
-                f"{self.MAX_VALUE_NAME} ({self.max_value}) must be no more than ({self.MAX_POSSIBLE_VALUE_2_BYTES if self.num_bytes == 2 else self.MAX_POSSIBLE_VALUE_1_BYTE})."
-            )
-        elif self.num_bytes == 1 and self.max_value > self.MAX_POSSIBLE_VALUE_1_BYTE:
-            raise ValueError(
-                f"{self.MAX_VALUE_NAME} ({self.max_value}) must be no more than ({self.MAX_POSSIBLE_VALUE_1_BYTE}). Did you mean to set num_bytes=2?"
+                f"{self.MAX_VALUE_NAME} ({self.max_value}) must be no more than ({max_possible})."
             )
 
-        if self.min_value < self.MIN_POSSIBLE_VALUE_2_BYTES:
+        if self.min_value < min_possible:
             raise ValueError(
-                f"{self.MAX_VALUE_NAME} ({self.min_value}) must be no less than ({self.MIN_POSSIBLE_VALUE_2_BYTES if self.num_bytes == 2 else self.MIN_POSSIBLE_VALUE_1_BYTE})."
-            )
-        elif self.num_bytes == 1 and self.min_value < self.MIN_POSSIBLE_VALUE_1_BYTE:
-            raise ValueError(
-                f"{self.MAX_VALUE_NAME} ({self.min_value}) must be no less than ({self.MIN_POSSIBLE_VALUE_1_BYTE}). Did you mean to set num_bytes=2?"
+                f"{self.MAX_VALUE_NAME} ({self.min_value}) must be no less than ({min_possible})."
             )
 
     def validate(self, value: int):
@@ -90,8 +91,7 @@ class RangeConverter(Converter):
         if validate_error := self.validate(value):
             raise ValueError(f"Bad value ({value}): {validate_error}")
 
-        most_significant_byte = value >> 7
-        least_significant_byte = value & 0b0_1111111
+        most_significant_byte, least_significant_byte = self._split_14_bits(value)
 
         return Sy77ParameterValue(most_significant_byte, least_significant_byte)
 
@@ -116,11 +116,46 @@ class ByteOffsetRangeConverter(RangeConverter):
 
 
 class SignMagnitudeRangeConverter(RangeConverter):
-    MAX_POSSIBLE_VALUE_1_BYTE = 0b0_0_111111  # 1 sign bit + 6 bits
-    MAX_POSSIBLE_VALUE_2_BYTES = 0b00_0_111111_1111111  # 1 sign bit + 13 bits
+    """
+    sign_bit_index -- index of bit used to indicate sign, starting from the
+        least-significant bit. E.g. if the number is of the format 0b000svvvv, s is the
+        sign bit, and vvvv are the four unsigned value bits, sign_bit_index is 4. The
+        max possible sign_bit_index for a 2-byte magnitude is 14, where the last 13 bits
+        are used for the unsigned value: 0b00svvvvv_vvvvvvvv or 0b0svvvvvv, 0b0vvvvvvv).
+    """
 
-    MIN_POSSIBLE_VALUE_1_BYTE = -1 * 0b0_0_111111  # 1 sign bit + 6 bits
-    MIN_POSSIBLE_VALUE_2_BYTES = -1 * 0b00_0_111111_1111111  # 1 sign bit + 13 bits
+    def __init__(
+        self,
+        min_value: int,
+        max_value: int,
+        *,
+        sign_bit_index: int,
+        num_bytes: int = 1,
+    ):
+        self.sign_bit_index = sign_bit_index
+
+        super().__init__(min_value, max_value, num_bytes=num_bytes)
+
+    def _get_max_sign_bit_index(self):
+        if self.num_bytes == 2:
+            return 13  # 0b00svvvvvvvvvvvvv
+
+        return 6  # 0b0svvvvvv
+
+    def _get_sign_bit_mask(self):
+        return 1 << self.sign_bit_index
+
+    def _get_value_bit_mask(self):
+        return self._get_sign_bit_mask() - 1
+
+    def _get_valid_values_range(self):
+        max_sign_bit = self._get_max_sign_bit_index()
+
+        # if max_sign_bit is 6 (0b0svvvvvv), then max_unsigned value is
+        # 0b01000000 - 1 = 0b00111111
+        max_unsigned_value = (1 << max_sign_bit) - 1
+
+        return (-max_unsigned_value, max_unsigned_value)
 
     def _validate_setup_parameters(self):
         # As far as I can tell, no SY77 params use sign magnitude for value ranges
@@ -128,6 +163,13 @@ class SignMagnitudeRangeConverter(RangeConverter):
         if self.num_bytes != 1:
             raise NotImplementedError(
                 "Sign magnitude conversion is not rigorously tested for 2-byte values"
+            )
+
+        min_sign_bit_index = 1
+        max_sign_bit_index = self._get_max_sign_bit_index()
+        if not min_sign_bit_index <= self.sign_bit_index <= max_sign_bit_index:
+            raise ValueError(
+                f"sign_bit_index must be in the range ({min_sign_bit_index}, {max_sign_bit_index}, inclusive). Got {self.sign_bit_index}"
             )
         super()._validate_setup_parameters()
 
@@ -139,16 +181,11 @@ class SignMagnitudeRangeConverter(RangeConverter):
 
         normalized_value = value * -1 if is_negative else value
 
-        if self.num_bytes == 1:
-            most_significant_byte = 0
-            least_significant_byte = (normalized_value & 0b00_111111) + (
-                is_negative << 6
-            )
-        else:  # num_bytes == 2
-            is_negative = bool(normalized_value >> 13)
-            most_significant_byte = normalized_value >> 7 & 0b00_111111 + (
-                is_negative << 6
-            )
-            least_significant_byte = normalized_value & 0b0_1111111
+        sign_bit = 0b00010000 * is_negative
+
+        final_value = sign_bit ^ normalized_value
+
+        # split 14-bit number across lower 7 bits of two bytes
+        most_significant_byte, least_significant_byte = self._split_14_bits(final_value)
 
         return Sy77ParameterValue(most_significant_byte, least_significant_byte)
