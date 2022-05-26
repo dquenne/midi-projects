@@ -1,10 +1,10 @@
 from abc import ABC
-from typing import Optional
+from typing import Generic, Optional, TypeVar
 
-from ..data_models import Sy77ParameterValue
+TInputValue = TypeVar("TInputValue")
 
 
-class BaseConverter(ABC):
+class BaseConverter(ABC, Generic[TInputValue]):
     def __init__(self, *args, num_bits=7, **kwargs):
         self.num_bits = num_bits
 
@@ -14,11 +14,12 @@ class BaseConverter(ABC):
         if not 0 < self.num_bits <= 14:
             raise ValueError("num_bits must be at least 1 and no more than 14")
 
-    def validate(self, value) -> Optional[str]:
+    def validate(self, value: TInputValue) -> Optional[str]:
         raise NotImplementedError()
 
-    def convert(self, value) -> Sy77ParameterValue:
+    def convert(self, value: TInputValue) -> int:
         """
-        Convert to 2-byte value. Returns a tuple of the form (MSB, LSB)
+        Convert to value for use in a sysex message. Converted value must be an unsigned
+        integer that is at most `self.num_bits` bits long.
         """
         raise NotImplementedError()

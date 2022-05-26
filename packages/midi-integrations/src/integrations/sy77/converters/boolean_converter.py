@@ -1,8 +1,7 @@
-from ..data_models import Sy77ParameterValue
 from .base_converter import BaseConverter
 
 
-class BooleanConverter(BaseConverter):
+class BooleanConverter(BaseConverter[bool]):
     def __init__(self, *, num_bits=1):
         super().__init__(num_bits=num_bits)
 
@@ -16,4 +15,4 @@ class BooleanConverter(BaseConverter):
         if validation_error := self.validate(value):
             raise ValueError(f"Bad value ({value}): {validation_error}")
 
-        return Sy77ParameterValue(0x00, 1 if value else 0)
+        return int(value)

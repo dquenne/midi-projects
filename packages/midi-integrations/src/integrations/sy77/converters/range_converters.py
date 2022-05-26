@@ -1,6 +1,4 @@
-from ..data_models import Sy77ParameterValue
 from .base_converter import BaseConverter
-from .util import split_14_bits_to_2_bytes
 
 
 class RangeConverter(BaseConverter):
@@ -59,9 +57,7 @@ class RangeConverter(BaseConverter):
         if validate_error := self.validate(value):
             raise ValueError(f"Bad value ({value}): {validate_error}")
 
-        most_significant_byte, least_significant_byte = split_14_bits_to_2_bytes(value)
-
-        return Sy77ParameterValue(most_significant_byte, least_significant_byte)
+        return value
 
 
 class ByteOffsetRangeConverter(RangeConverter):
@@ -153,9 +149,4 @@ class SignMagnitudeRangeConverter(RangeConverter):
 
         final_value = sign_bit ^ normalized_value
 
-        # split 14-bit number across lower 7 bits of two bytes
-        most_significant_byte, least_significant_byte = split_14_bits_to_2_bytes(
-            final_value
-        )
-
-        return Sy77ParameterValue(most_significant_byte, least_significant_byte)
+        return final_value

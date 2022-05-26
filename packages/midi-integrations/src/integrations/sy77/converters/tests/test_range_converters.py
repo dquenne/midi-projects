@@ -16,7 +16,7 @@ class TestRangeConverter(TestCase):
 
         converted_value = self.converter.convert(value)
 
-        self.assertEqual(converted_value, (0x00, 0x0F))
+        self.assertEqual(converted_value, 0x0F)
 
     def test_validates_max_value_for_7_bits(self):
         RangeConverter(0, 127)
@@ -49,7 +49,7 @@ class TestTwoByteRangeConverter(TestCase):
 
         converted_value = self.converter.convert(value)
 
-        self.assertEqual(converted_value, (0b0_0111110, 0b0_1101101))
+        self.assertEqual(converted_value, (0b00_0111110_1101101))
 
     def test_validates_max_value_for_14_bits(self):
         RangeConverter(0, 16383, num_bytes=2)
@@ -67,7 +67,7 @@ class TestByteOffsetRangeConverter(TestCase):
 
         converted_value = self.converter.convert(value)
 
-        self.assertEqual(converted_value, (0x00, 0x36))
+        self.assertEqual(converted_value, 0x36)
 
     def test_validates_min_value_and_offset(self):
         with self.assertRaises(ValueError):
@@ -92,7 +92,7 @@ class TestSignMagnitudeRangeConverter(TestCase):
 
         converted_value = self.converter.convert(value)
 
-        self.assertEqual(converted_value, (0x00, 0b00010000 + 10))
+        self.assertEqual(converted_value, 0b00010000 + 10)
 
     def test_respects_magnitude_bit_index(self):
         three_bit_converter = SignMagnitudeRangeConverter(-7, 7, sign_bit_index=3)
@@ -101,14 +101,14 @@ class TestSignMagnitudeRangeConverter(TestCase):
 
         converted_value = three_bit_converter.convert(value)
 
-        self.assertEqual(converted_value, (0x00, 0b00001000 + 6))
+        self.assertEqual(converted_value, 0b00001000 + 6)
 
     def test_handles_positive_numbers(self):
         value = 10
 
         converted_value = self.converter.convert(value)
 
-        self.assertEqual(converted_value, (0x00, 10))
+        self.assertEqual(converted_value, 10)
 
     def test_validates_min_value(self):
         with self.assertRaises(ValueError):

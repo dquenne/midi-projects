@@ -17,8 +17,8 @@
 """
 from mido import Message
 
-from .converters.base_converter import BaseConverter
 from .data_models import Sy77ParameterValue
+from .schemas.byte_layout import ByteLayout
 from .types import OperatorNumber, ParameterChangeType, VoiceElement
 from .util import check_is_within_number_of_bits
 
@@ -70,14 +70,14 @@ class ParameterChangeMessageSchema:
 
 
 class MultiCommonDataMessageSchema(ParameterChangeMessageSchema):
-    def __init__(self, n2: int, value_converter: BaseConverter):
+    def __init__(self, n2: int, byte_layout: ByteLayout):
         super().__init__(
             parameter_change_type=ParameterChangeType.MULTI_COMMON_DATA, n1=0, n2=n2
         )
-        self.value_converter = value_converter
+        self.byte_layout = byte_layout
 
     def create_sysex_message(self, value):
-        converted_value = self.value_converter.convert(value)
+        converted_value = self.byte_layout.convert(value)
 
         return self._build_sysex_message(
             value=converted_value,
@@ -85,14 +85,14 @@ class MultiCommonDataMessageSchema(ParameterChangeMessageSchema):
 
 
 class VoiceCommonDataSchema(ParameterChangeMessageSchema):
-    def __init__(self, n2: int, value_converter: BaseConverter):
+    def __init__(self, n2: int, byte_layout: ByteLayout):
         super().__init__(
             parameter_change_type=ParameterChangeType.VOICE_COMMON_DATA, n1=0, n2=n2
         )
-        self.value_converter = value_converter
+        self.byte_layout = byte_layout
 
     def create_sysex_message(self, value):
-        converted_value = self.value_converter.convert(value)
+        converted_value = self.byte_layout.convert(value)
 
         return self._build_sysex_message(
             value=converted_value,
@@ -107,14 +107,14 @@ class ElementDataSchemaMixin:
 
 
 class VoiceElementDataSchema(ElementDataSchemaMixin, ParameterChangeMessageSchema):
-    def __init__(self, n2: int, value_converter: BaseConverter):
+    def __init__(self, n2: int, byte_layout: ByteLayout):
         super().__init__(
             parameter_change_type=ParameterChangeType.VOICE_ELEMENT_DATA, n1=0, n2=n2
         )
-        self.value_converter = value_converter
+        self.byte_layout = byte_layout
 
     def create_sysex_message(self, voice_element: VoiceElement, value):
-        converted_value = self.value_converter.convert(value)
+        converted_value = self.byte_layout.convert(value)
 
         return self._build_sysex_message(
             fourth_byte=self._generate_element_number_byte(voice_element),
@@ -122,19 +122,21 @@ class VoiceElementDataSchema(ElementDataSchemaMixin, ParameterChangeMessageSchem
         )
 
 
-class AfmElementOperatorDataSchema(ElementDataSchemaMixin, ParameterChangeMessageSchema):
-    def __init__(self, n2: int, value_converter: BaseConverter):
+class AfmElementOperatorDataSchema(
+    ElementDataSchemaMixin, ParameterChangeMessageSchema
+):
+    def __init__(self, n2: int, byte_layout: ByteLayout):
         super().__init__(
             parameter_change_type=ParameterChangeType.AFM_ELEMENT_OPERATOR_DATA,
             n1=0,
             n2=n2,
         )
-        self.value_converter = value_converter
+        self.byte_layout = byte_layout
 
     def create_sysex_message(
         self, voice_element: VoiceElement, operator_number: OperatorNumber, value
     ):
-        converted_value = self.value_converter.convert(value)
+        converted_value = self.byte_layout.convert(value)
 
         return self._build_sysex_message(
             fourth_byte=self._generate_element_number_byte(voice_element),

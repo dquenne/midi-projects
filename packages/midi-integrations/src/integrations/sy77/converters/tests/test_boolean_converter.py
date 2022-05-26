@@ -12,14 +12,14 @@ class TestBooleanConverter(TestCase):
 
         converted_value = self.converter.convert(value)
 
-        self.assertEqual(converted_value, (0x00, 0x01))
+        self.assertEqual(converted_value, 0x01)
 
     def test_false(self):
         value = False
 
         converted_value = self.converter.convert(value)
 
-        self.assertEqual(converted_value, (0x00, 0x00))
+        self.assertEqual(converted_value, 0x00)
 
     def test_invalid_boolean(self):
         value = "True"

@@ -19,7 +19,7 @@ class TestBooleanConverter(TestCase):
 
         converted_value = self.converter.convert(value)
 
-        self.assertEqual(converted_value, (0x00, 0x01))
+        self.assertEqual(converted_value, 0x01)
 
     def test_validates_enum_is_int_enum_on_initialization(self):
         class BadEnum(Enum):

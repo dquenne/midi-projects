@@ -1,7 +1,6 @@
 from enum import IntEnum
 from typing import Generic, Type, TypeVar
 
-from ..data_models import Sy77ParameterValue
 from ..util import check_is_within_number_of_bits
 from .base_converter import BaseConverter
 
@@ -32,4 +31,4 @@ class EnumConverter(BaseConverter, Generic[T]):
         if validation_error := self.validate(value):
             raise ValueError(f"Bad value ({value}): {validation_error}")
 
-        return Sy77ParameterValue(0x00, value.value)
+        return value.value
