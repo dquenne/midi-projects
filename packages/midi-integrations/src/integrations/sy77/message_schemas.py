@@ -15,7 +15,7 @@ from .schema_builders import (
     VoiceCommonDataSchema,
     VoiceElementDataSchema,
 )
-from .types import VoiceElementMode
+from .types import PortamentoMode, VoiceElementMode
 
 
 class VoiceCommonDataSchemas:
@@ -74,7 +74,7 @@ class VoiceCommonDataSchemas:
 
     RANDOM_PITCH_FLUCTUATION = VoiceCommonDataSchema(0x3B, RangeConverter(0, 7))
 
-    # PORTAMENTO_MODE = VoiceCommonDataSchema(0x3C, None)
+    PORTAMENTO_MODE = VoiceCommonDataSchema(0x3C, EnumConverter(PortamentoMode))
     PORTAMENTO_TIME = VoiceCommonDataSchema(0x3D, RangeConverter(0, 127))
 
     VOICE_VOLUME = VoiceCommonDataSchema(0x3F, RangeConverter(0, 127))

@@ -45,6 +45,15 @@ class VoiceElementMode(IntEnum):
     MODE_DRUM_SET = 0x0A
 
 
+class PortamentoMode(IntEnum):
+    """
+    From SY77 MIDI Data Format Manual, Table 1-3, PORM data range
+    """
+
+    FINGERED = 0
+    FULL_TIME = 1
+
+
 class VoiceElement(IntEnum):
     """
     From SY77 MIDI Data Format Manual, Table 1-4, 1-6, 1-7, 1-8, 1-10

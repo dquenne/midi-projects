@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from ..message_schemas import VoiceCommonDataSchemas
-from ..types import VoiceElementMode
+from ..types import PortamentoMode, VoiceElementMode
 
 
 class TestVoiceCommonDataSchemas(TestCase):
@@ -34,7 +34,6 @@ class TestVoiceCommonDataSchemas(TestCase):
             (VoiceCommonDataSchemas.VOICE_VOLUME_LIMIT_LOW, 0, 0x39, 0x00),
             (VoiceCommonDataSchemas.MICRO_TUNING_TABLE_SELECT, 0, 0x3A, 0x00),
             (VoiceCommonDataSchemas.RANDOM_PITCH_FLUCTUATION, 0, 0x3B, 0x00),
-            # (VoiceCommonDataSchemas.PORTAMENTO_MODE, 0, 0x3C, 0x00),
             (VoiceCommonDataSchemas.PORTAMENTO_TIME, 0, 0x3D, 0x00),
             (VoiceCommonDataSchemas.VOICE_VOLUME, 0, 0x3F, 0x00),
         ]
@@ -70,7 +69,6 @@ class TestVoiceCommonDataSchemas(TestCase):
             (VoiceCommonDataSchemas.VOICE_VOLUME_LIMIT_LOW, 127, 0x39, 0x7F),
             (VoiceCommonDataSchemas.MICRO_TUNING_TABLE_SELECT, 65, 0x3A, 0x41),
             (VoiceCommonDataSchemas.RANDOM_PITCH_FLUCTUATION, 7, 0x3B, 0x07),
-            # (VoiceCommonDataSchemas.PORTAMENTO_MODE, 0, 0x3C, 0x00),
             (VoiceCommonDataSchemas.PORTAMENTO_TIME, 127, 0x3D, 0x7F),
             (VoiceCommonDataSchemas.VOICE_VOLUME, 127, 0x3F, 0x7F),
         ]
@@ -101,6 +99,18 @@ class TestVoiceCommonDataSchemas(TestCase):
                 VoiceElementMode.MODE_1_AWM_POLY,
                 0x00,
                 0x05,
+            ),
+            (
+                VoiceCommonDataSchemas.PORTAMENTO_MODE,
+                PortamentoMode.FINGERED,
+                0x3C,
+                0x00,
+            ),
+            (
+                VoiceCommonDataSchemas.PORTAMENTO_MODE,
+                PortamentoMode.FULL_TIME,
+                0x3C,
+                0x01,
             ),
         ]
 
