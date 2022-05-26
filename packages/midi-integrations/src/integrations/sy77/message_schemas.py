@@ -4,6 +4,7 @@ https://usa.yamaha.com/files/download/other_assets/1/317121/SY77E2.PDF
 """
 
 
+from .converters.enum_converter import EnumConverter
 from .converters.range_converters import (
     ByteOffsetRangeConverter,
     RangeConverter,
@@ -14,6 +15,7 @@ from .schema_builders import (
     VoiceCommonDataSchema,
     VoiceElementDataSchema,
 )
+from .types import VoiceElementMode
 
 
 class VoiceCommonDataSchemas:
@@ -22,7 +24,7 @@ class VoiceCommonDataSchemas:
     """
 
     # [header data]
-    # ELEMENT_MODE = VoiceCommonDataSchema(0x00, None)
+    ELEMENT_MODE = VoiceCommonDataSchema(0x00, EnumConverter(VoiceElementMode))
 
     # VOICE_NAME_0 = VoiceCommonDataSchema(0x01, None)
     # VOICE_NAME_1 = VoiceCommonDataSchema(0x02, None)

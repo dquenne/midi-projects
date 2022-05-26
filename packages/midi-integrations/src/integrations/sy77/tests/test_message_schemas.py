@@ -1,6 +1,7 @@
 from unittest import TestCase
 
 from ..message_schemas import VoiceCommonDataSchemas
+from ..types import VoiceElementMode
 
 
 class TestVoiceCommonDataSchemas(TestCase):
@@ -81,6 +82,26 @@ class TestVoiceCommonDataSchemas(TestCase):
     def test_negatives(self):
         test_cases = [
             (VoiceCommonDataSchemas.AFTER_TOUCH_PITCH_BEND_RANGE, -12, 0x29, 0x1C),
+        ]
+
+        for schema, input_value, n2, v2 in test_cases:
+            sysex_message = schema.create_sysex_message(input_value)
+            self.assertEqual(sysex_message.hex(), self.SYSEX_TEMPLATE.format(n2, v2))
+
+    def test_enums(self):
+        test_cases = [
+            (
+                VoiceCommonDataSchemas.ELEMENT_MODE,
+                VoiceElementMode.MODE_2_AFM_MONO,
+                0x00,
+                0x01,
+            ),
+            (
+                VoiceCommonDataSchemas.ELEMENT_MODE,
+                VoiceElementMode.MODE_1_AWM_POLY,
+                0x00,
+                0x05,
+            ),
         ]
 
         for schema, input_value, n2, v2 in test_cases:
