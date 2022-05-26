@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from ..message_schemas import VoiceCommonDataSchemas
-from ..types import PortamentoMode, VoiceElementMode
+from ..message_schemas import VoiceCommonDataSchemas, VoiceElementDataSchemas
+from ..types import PortamentoMode, VoiceElement, VoiceElementMode
 
 
 class TestVoiceCommonDataSchemas(TestCase):
@@ -117,3 +117,51 @@ class TestVoiceCommonDataSchemas(TestCase):
         for schema, input_value, n2, v2 in test_cases:
             sysex_message = schema.create_sysex_message(input_value)
             self.assertEqual(sysex_message.hex(), self.SYSEX_TEMPLATE.format(n2, v2))
+
+
+class TestVoiceElementDataSchemas(TestCase):
+    SYSEX_TEMPLATE = "F0 43 15 34 03 00 00 {:02X} 00 {:02X} F7"
+
+    def test_multi_value(self):
+        test_cases = [
+            (
+                VoiceElementDataSchemas.MICRO_TUNING_ENABLE_AND_OUTPUT_SELECT,
+                {
+                    "micro_tuning_switch": True,
+                    "output_select_1": True,
+                    "output_select_2": True,
+                },
+                0x08,
+                0b00000111,
+            ),
+            (
+                VoiceElementDataSchemas.MICRO_TUNING_ENABLE_AND_OUTPUT_SELECT,
+                {
+                    "micro_tuning_switch": True,
+                    "output_select_1": False,
+                    "output_select_2": False,
+                },
+                0x08,
+                0b00000001,
+            ),
+            (
+                VoiceElementDataSchemas.MICRO_TUNING_ENABLE_AND_OUTPUT_SELECT,
+                {
+                    "micro_tuning_switch": False,
+                    "output_select_1": True,
+                    "output_select_2": True,
+                },
+                0x08,
+                0b00000110,
+            ),
+        ]
+
+        for index, (schema, input_values, n2, v2) in enumerate(test_cases):
+            sysex_message = schema.create_sysex_message(
+                VoiceElement.ELEMENT_1, input_values
+            )
+            self.assertEqual(
+                sysex_message.hex(),
+                self.SYSEX_TEMPLATE.format(n2, v2),
+                f"(test case {index})",
+            )

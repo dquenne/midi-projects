@@ -4,6 +4,7 @@ https://usa.yamaha.com/files/download/other_assets/1/317121/SY77E2.PDF
 """
 
 
+from .converters.boolean_converter import BooleanConverter
 from .converters.enum_converter import EnumConverter
 from .converters.range_converters import (
     ByteOffsetRangeConverter,
@@ -15,7 +16,7 @@ from .schema_builders import (
     VoiceCommonDataSchema,
     VoiceElementDataSchema,
 )
-from .schemas.byte_layout import SimpleByteLayout
+from .schemas.byte_layout import MultiValueByteLayout, SimpleByteLayout
 from .types import PortamentoMode, VoiceElementMode
 
 
@@ -154,7 +155,17 @@ class VoiceElementDataSchemas:
 
     PAN = VoiceElementDataSchema(0x7, SimpleByteLayout(RangeConverter(0, 95)))
 
-    # MICRO_TUNING_ENABLE_AND_OUTPUT_SELECT = VoiceElementDataSchema(0x8, None)
+    MICRO_TUNING_ENABLE_AND_OUTPUT_SELECT = VoiceElementDataSchema(
+        0x8,
+        MultiValueByteLayout(
+            1,
+            {
+                0: ("micro_tuning_switch", BooleanConverter()),
+                1: ("output_select_1", BooleanConverter()),
+                2: ("output_select_2", BooleanConverter()),
+            },
+        ),
+    )
 
 
 # class AfmElementCommonDataSchemas:

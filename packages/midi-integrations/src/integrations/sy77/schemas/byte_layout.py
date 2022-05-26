@@ -22,6 +22,50 @@ class ByteLayout(ABC):
         raise NotImplementedError()
 
 
+class MultiValueByteLayout(ByteLayout, Generic[TValueNames, TInputValues]):
+    def __init__(
+        self,
+        num_bytes: int,
+        fields: Dict[int, Tuple[TValueNames, BaseConverter[TInputValues]]],
+    ):
+        self.num_bytes = num_bytes
+        self.fields_by_offset_bit = fields
+
+        self._validate_fields_by_offset_bit()
+
+    def _validate_fields_by_offset_bit(self):
+        ordered_bit_offsets = sorted(self.fields_by_offset_bit.keys())
+
+        next_unused_bit = 0
+        max_usable_bit = self._get_max_usable_bit()
+
+        for bit_offset in ordered_bit_offsets:
+            (field_name, field_converter) = self.fields_by_offset_bit[bit_offset]
+            if bit_offset < next_unused_bit:
+                raise ValueError(
+                    f"field {field_name} at bit b{bit_offset} overlaps with previous field"
+                )
+
+            final_bit = bit_offset + field_converter.num_bits - 1
+
+            if final_bit > max_usable_bit:
+                raise ValueError(
+                    f"field {field_name} at bit b{bit_offset}, length {field_converter.num_bits} bits, extends beyond last bit (b{max_usable_bit})"
+                )
+
+            next_unused_bit = final_bit + 1
+
+    def convert(self, value_or_values: Dict[TValueNames, TInputValues]):
+        output_as_14bits = 0
+        for (offset_bit, field) in self.fields_by_offset_bit.items():
+            (field_name, field_converter) = field
+            converted_value = field_converter.convert(value_or_values[field_name])
+
+            output_as_14bits ^= converted_value << offset_bit
+
+        return Sy77ParameterValue(*split_14_bits_to_2_bytes(output_as_14bits))
+
+
 TValue = TypeVar("TValue", bound=str)
 
 
