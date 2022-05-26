@@ -4,15 +4,17 @@ https://usa.yamaha.com/files/download/other_assets/1/317121/SY77E2.PDF
 """
 
 
-from .converters.range_converters import RangeConverter, SignMagnitudeRangeConverter
-from .schema_builders import VoiceCommonDataSchema
+from .converters.range_converters import (
+    ByteOffsetRangeConverter,
+    RangeConverter,
+    SignMagnitudeRangeConverter,
+)
+from .schema_builders import VoiceCommonDataSchema, VoiceElementDataSchema
 
 
 class VoiceCommonDataSchemas:
     """
     From SY77 MIDI Data Format Manual, Table 1-3
-
-    Voice Common Data Parameter ID is specified by one byte.
     """
 
     # [header data]
@@ -66,32 +68,34 @@ class VoiceCommonDataSchemas:
 
     RANDOM_PITCH_FLUCTUATION = VoiceCommonDataSchema(0x3B, RangeConverter(0, 7))
 
-    PORTAMENTO_MODE = VoiceCommonDataSchema(0x3C, None)
+    # PORTAMENTO_MODE = VoiceCommonDataSchema(0x3C, None)
     PORTAMENTO_TIME = VoiceCommonDataSchema(0x3D, RangeConverter(0, 127))
 
     VOICE_VOLUME = VoiceCommonDataSchema(0x3F, RangeConverter(0, 127))
 
 
-# class VoiceElementDataMessage:
-#     """
-#     From SY77 MIDI Data Format Manual, Table 1-4
+class VoiceElementDataSchemas:
+    """
+    From SY77 MIDI Data Format Manual, Table 1-4
+    """
 
-#     Voice Element Parameter ID is specified by one nibble.
-#     """
+    ELEMENT_LEVEL = VoiceElementDataSchema(0x0, RangeConverter(0, 127))
+    ELEMENT_DETUNE = VoiceElementDataSchema(
+        0x1, SignMagnitudeRangeConverter(-7, 7, sign_bit_index=3)
+    )
+    ELEMENT_NOTE_SHIFT = VoiceElementDataSchema(
+        0x2, ByteOffsetRangeConverter(-64, 63, offset=64)
+    )
 
-#     ELEMENT_LEVEL = Sy77Parameter("", 0x0, None)
-#     ELEMENT_DETUNE = Sy77Parameter("", 0x1, None)
-#     ELEMENT_NOTE_SHIFT = Sy77Parameter("", 0x2, None)
+    ELEMENT_NOTE_LOW_LIMIT = VoiceElementDataSchema(0x3, RangeConverter(0, 127))
+    ELEMENT_NOTE_HIGH_LIMIT = VoiceElementDataSchema(0x4, RangeConverter(0, 127))
 
-#     ELEMENT_NOTE_LOW_LIMIT = Sy77Parameter("", 0x3, None)
-#     ELEMENT_NOTE_HIGH_LIMIT = Sy77Parameter("", 0x4, None)
+    ELEMENT_VELOCITY_LOW_LIMIT = VoiceElementDataSchema(0x5, RangeConverter(0, 127))
+    ELEMENT_VELOCITY_HIGH_LIMIT = VoiceElementDataSchema(0x6, RangeConverter(0, 127))
 
-#     ELEMENT_VELOCITY_LOW_LIMIT = Sy77Parameter("", 0x5, None)
-#     ELEMENT_VELOCITY_HIGH_LIMIT = Sy77Parameter("", 0x6, None)
+    PAN = VoiceElementDataSchema(0x7, RangeConverter(0, 95))
 
-#     PAN = Sy77Parameter("", 0x7, None)
-
-#     MICRO_TUNING_ENABLE_AND_OUTPUT_SELECT = Sy77Parameter("", 0x8, None)
+    # MICRO_TUNING_ENABLE_AND_OUTPUT_SELECT = VoiceElementDataSchema(0x8, None)
 
 
 # class AfmElementCommonSchema:
