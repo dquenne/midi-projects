@@ -9,7 +9,11 @@ from .converters.range_converters import (
     RangeConverter,
     SignMagnitudeRangeConverter,
 )
-from .schema_builders import VoiceCommonDataSchema, VoiceElementDataSchema
+from .schema_builders import (
+    AfmElementOperatorDataSchema,
+    VoiceCommonDataSchema,
+    VoiceElementDataSchema,
+)
 
 
 class VoiceCommonDataSchemas:
@@ -98,7 +102,7 @@ class VoiceElementDataSchemas:
     # MICRO_TUNING_ENABLE_AND_OUTPUT_SELECT = VoiceElementDataSchema(0x8, None)
 
 
-# class AfmElementCommonSchema:
+# class AfmElementCommonDataSchemas:
 #     """
 #     From SY77 MIDI Data Format Manual, Table 1-6
 
@@ -141,35 +145,38 @@ class VoiceElementDataSchemas:
 #     SUB_LFO_PITCH_MOD_DEPTH = Sy77Parameter("", 0x19, None)
 
 
-# class AfmElementSchema:
-#     """
-#     From SY77 MIDI Data Format Manual, Table 1-7
+class AfmElementOperatorDataSchemas:
+    """
+    From SY77 MIDI Data Format Manual, Table 1-7
+    """
 
-#     AFM Element Parameter ID is specified by one byte.
-#     """
+    # Envelope Generator
+    EG_KEY_ON_RATE_1 = AfmElementOperatorDataSchema(0x00, RangeConverter(0, 63))
+    EG_KEY_ON_RATE_2 = AfmElementOperatorDataSchema(0x01, RangeConverter(0, 63))
+    EG_KEY_ON_RATE_3 = AfmElementOperatorDataSchema(0x02, RangeConverter(0, 63))
+    EG_KEY_ON_RATE_4 = AfmElementOperatorDataSchema(0x03, RangeConverter(0, 63))
+    EG_KEY_OFF_RATE_1 = AfmElementOperatorDataSchema(0x04, RangeConverter(0, 63))
+    EG_KEY_OFF_RATE_2 = AfmElementOperatorDataSchema(0x05, RangeConverter(0, 63))
 
-#     # Envelope Generator
-#     EG_KEY_ON_RATE_1 = Sy77Parameter("", 0x00, None)
-#     EG_KEY_ON_RATE_2 = Sy77Parameter("", 0x01, None)
-#     EG_KEY_ON_RATE_3 = Sy77Parameter("", 0x02, None)
-#     EG_KEY_ON_RATE_4 = Sy77Parameter("", 0x03, None)
-#     EG_KEY_OFF_RATE_1 = Sy77Parameter("", 0x04, None)
-#     EG_KEY_OFF_RATE_2 = Sy77Parameter("", 0x05, None)
+    EG_KEY_ON_LEVEL_1 = AfmElementOperatorDataSchema(0x06, RangeConverter(0, 63))
+    EG_KEY_ON_LEVEL_2 = AfmElementOperatorDataSchema(0x07, RangeConverter(0, 63))
+    EG_KEY_ON_LEVEL_3 = AfmElementOperatorDataSchema(0x08, RangeConverter(0, 63))
+    EG_KEY_ON_LEVEL_4 = AfmElementOperatorDataSchema(0x09, RangeConverter(0, 63))
+    EG_KEY_OFF_LEVEL_1 = AfmElementOperatorDataSchema(0x0A, RangeConverter(0, 63))
+    EG_KEY_OFF_LEVEL_2 = AfmElementOperatorDataSchema(0x0B, RangeConverter(0, 63))
 
-#     EG_KEY_ON_LEVEL_1 = Sy77Parameter("", 0x06, None)
-#     EG_KEY_ON_LEVEL_2 = Sy77Parameter("", 0x07, None)
-#     EG_KEY_ON_LEVEL_3 = Sy77Parameter("", 0x08, None)
-#     EG_KEY_ON_LEVEL_4 = Sy77Parameter("", 0x09, None)
-#     EG_KEY_OFF_LEVEL_1 = Sy77Parameter("", 0x0A, None)
-#     EG_KEY_OFF_LEVEL_2 = Sy77Parameter("", 0x0B, None)
+    EG_SUSTAIN_LOOP_POINT = AfmElementOperatorDataSchema(0x0C, RangeConverter(0, 3))
+    EG_KEY_ON_HOLD_TIME = AfmElementOperatorDataSchema(0x0D, RangeConverter(0, 63))
+    EG_KEY_ON_LEVEL = AfmElementOperatorDataSchema(0x0E, RangeConverter(0, 63))
+    EG_RATE_SCALING = AfmElementOperatorDataSchema(
+        0x0F, SignMagnitudeRangeConverter(-7, 7, sign_bit_index=3)
+    )
 
-#     EG_SUSTAIN_LOOP_POINT = Sy77Parameter("", 0x0C, None)
-#     EG_KEY_ON_HOLD_TIME = Sy77Parameter("", 0x0D, None)
-#     EG_KEY_ON_LEVEL = Sy77Parameter("", 0x0E, None)
-#     EG_RATE_SCALING = Sy77Parameter("", 0x0F, None)
+    AMPLITUDE_MOD_SENSITIVITY = AfmElementOperatorDataSchema(0x10, RangeConverter(0, 7))
+    VELOCITY_SENSITIVITY = AfmElementOperatorDataSchema(
+        0x11, SignMagnitudeRangeConverter(-7, 7, sign_bit_index=3)
+    )
 
-#     AMPLITUDE_MOD_SENSITIVITY = Sy77Parameter("", 0x10, None)
-#     VELOCITY_SENSITIVITY = Sy77Parameter("", 0x11, None)
 
 #     # Algorithm Parameters
 

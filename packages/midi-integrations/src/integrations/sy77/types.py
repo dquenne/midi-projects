@@ -55,7 +55,23 @@ class VoiceElement(Enum):
     bits 5 and 6 of T2 (byte 4).
     """
 
-    ELEMENT_1 = 0b00
-    ELEMENT_2 = 0b01
-    ELEMENT_3 = 0b10
-    ELEMENT_4 = 0b11
+    ELEMENT_1 = 0  # 0b00
+    ELEMENT_2 = 1  # 0b01
+    ELEMENT_3 = 2  # 0b10
+    ELEMENT_4 = 3  # 0b11
+
+
+class OperatorNumber(Enum):
+    """
+    From SY77 MIDI Data Format Manual, Table 1-7
+
+    AFM operator number is specified by three bits. On message creation, these bits are
+    shifted to bits 5-7 of T1 (byte 3).
+    """
+
+    OPERATOR_1 = 0
+    OPERATOR_2 = 1
+    OPERATOR_3 = 2
+    OPERATOR_4 = 3
+    OPERATOR_5 = 4
+    OPERATOR_6 = 5
