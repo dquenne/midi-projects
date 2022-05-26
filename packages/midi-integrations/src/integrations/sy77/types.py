@@ -51,11 +51,11 @@ class VoiceElement(Enum):
     """
     From SY77 MIDI Data Format Manual, Table 1-4, 1-6, 1-7, 1-8, 1-10
 
-    Element ID is specified by two bits, shifted to the 2nd- and 3rd-most
-    significant bits.
+    Element ID is specified by two bits. On message creation, these bits are shifted to
+    bits 5 and 6 of T2 (byte 4).
     """
 
-    ELEMENT_1 = 0b00 << 5  # 0x00
-    ELEMENT_2 = 0b01 << 5  # 0x20
-    ELEMENT_3 = 0b10 << 5  # 0x40
-    ELEMENT_4 = 0b11 << 5  # 0x60
+    ELEMENT_1 = 0b00
+    ELEMENT_2 = 0b01
+    ELEMENT_3 = 0b10
+    ELEMENT_4 = 0b11
