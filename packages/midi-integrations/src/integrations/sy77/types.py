@@ -3,10 +3,10 @@ Most data comes from SY77 MIDI Data Format Manual, retrieved on 2022-05-23 at
 https://usa.yamaha.com/files/download/other_assets/1/317121/SY77E2.PDF
 """
 
-from enum import Enum
+from enum import IntEnum
 
 
-class ParameterChangeType(Enum):
+class ParameterChangeType(IntEnum):
     """
     From SY77 MIDI Data Format Manual, Section 3.1
 
@@ -27,11 +27,9 @@ class ParameterChangeType(Enum):
     MICRO_TUNING_DATA = 0xB
 
 
-class VoiceElementMode(Enum):
+class VoiceElementMode(IntEnum):
     """
     From SY77 MIDI Data Format Manual, Table 1-3, ELMODE data range
-
-    Voice Element Mode ID is specified by one byte.
     """
 
     MODE_1_AFM_MONO = 0x00
@@ -47,7 +45,7 @@ class VoiceElementMode(Enum):
     MODE_DRUM_SET = 0x0A
 
 
-class VoiceElement(Enum):
+class VoiceElement(IntEnum):
     """
     From SY77 MIDI Data Format Manual, Table 1-4, 1-6, 1-7, 1-8, 1-10
 
@@ -61,7 +59,7 @@ class VoiceElement(Enum):
     ELEMENT_4 = 3  # 0b11
 
 
-class OperatorNumber(Enum):
+class OperatorNumber(IntEnum):
     """
     From SY77 MIDI Data Format Manual, Table 1-7
 
