@@ -3,6 +3,9 @@ from .base_converter import BaseConverter
 
 
 class BooleanConverter(BaseConverter):
+    def __init__(self, *, num_bits=1):
+        super().__init__(num_bits=num_bits)
+
     def validate(self, value: bool):
         if not isinstance(value, bool):
             return "not a boolean"

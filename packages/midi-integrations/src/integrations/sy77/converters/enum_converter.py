@@ -9,12 +9,13 @@ T = TypeVar("T", bound=IntEnum)
 
 
 class EnumConverter(BaseConverter, Generic[T]):
-    def __init__(self, enum_class: Type[T]):
+    def __init__(self, enum_class: Type[T], *, num_bits: int = 7):
         self.enum_class = enum_class
+        super().__init__(num_bits=num_bits)
 
         if any(
             not isinstance(option.value, int)
-            or not check_is_within_number_of_bits(num_bits=7, value=option.value)
+            or not check_is_within_number_of_bits(num_bits=num_bits, value=option.value)
             for option in self.enum_class
         ):
             raise ValueError(

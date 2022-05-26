@@ -18,7 +18,7 @@ class RangeConverter(BaseConverter):
         self.max_value = max_value
         self.num_bytes = num_bytes
 
-        self._validate_setup_parameters()
+        super().__init__(num_bits=num_bytes * 7)
 
     def _get_valid_values_range(self):
         if self.num_bytes == 2:
@@ -43,6 +43,8 @@ class RangeConverter(BaseConverter):
             raise ValueError(
                 f"{self.MAX_VALUE_NAME} ({self.min_value}) must be no less than ({min_possible})."
             )
+
+        super()._validate_setup_parameters()
 
     def validate(self, value: int):
         if not isinstance(value, int):
