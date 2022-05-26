@@ -87,12 +87,21 @@ class TestSignMagnitudeRangeConverter(TestCase):
     def setUp(self):
         self.converter = SignMagnitudeRangeConverter(-12, 12, sign_bit_index=4)
 
-    def test_sets_magnitude_byte(self):
+    def test_sets_magnitude_bit(self):
         value = -10
 
         converted_value = self.converter.convert(value)
 
         self.assertEqual(converted_value, (0x00, 0b00010000 + 10))
+
+    def test_respects_magnitude_bit_index(self):
+        three_bit_converter = SignMagnitudeRangeConverter(-7, 7, sign_bit_index=3)
+
+        value = -6
+
+        converted_value = three_bit_converter.convert(value)
+
+        self.assertEqual(converted_value, (0x00, 0b00001000 + 6))
 
     def test_handles_positive_numbers(self):
         value = 10

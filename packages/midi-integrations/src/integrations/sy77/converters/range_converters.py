@@ -147,7 +147,7 @@ class SignMagnitudeRangeConverter(RangeConverter):
 
         normalized_value = value * -1 if is_negative else value
 
-        sign_bit = 0b00010000 * is_negative
+        sign_bit = self._get_sign_bit_mask() * is_negative
 
         final_value = sign_bit ^ normalized_value
 
